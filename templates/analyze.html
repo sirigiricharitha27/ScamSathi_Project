@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Analyze · ScamSathi{% endblock %}
+{% block content %}
+<div class="page-heading"><span class="eyebrow">01 / SCREEN</span><h1 class="display-6 fw-bold mt-2">Analyze a suspicious message</h1><p class="text-secondary">Paste message text or a URL. Analysis runs locally using transparent rules.</p></div>
+<form method="post" class="panel p-4">
+  <label for="message" class="form-label fw-semibold">Message or URL</label>
+  <textarea id="message" name="message" class="form-control" rows="7" maxlength="8000" placeholder="Example: URGENT! Your account will be suspended. Verify your account immediately at http://example.invalid/verify">{{ source_text }}</textarea>
+  <div class="d-flex justify-content-between flex-wrap gap-2 mt-3"><span class="form-text">Do not paste passwords, OTPs, card numbers or private personal information.</span><button class="btn btn-primary" type="submit">Analyze indicators</button></div>
+</form>
+{% if result %}
+<div class="panel p-4 mt-4">
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div><span class="eyebrow">RESULT</span><h2 class="h3 mt-2 mb-1">{{ result.level }} indicator level</h2><p class="text-secondary mb-0">Heuristic score; not a definitive verdict.</p></div>
+    <div class="score-circle score-{{ 'high' if result.score >= 60 else ('medium' if result.score >= 30 else 'low') }}"><strong>{{ result.score }}</strong><span>/100</span></div>
+  </div>
+  <div class="progress mt-4" role="progressbar" aria-label="Heuristic score" aria-valuenow="{{ result.score }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ result.score }}%"></div></div>
+  <h3 class="h5 mt-4">Indicators found</h3>
+  <ul class="indicator-list">{% for item in result.indicators %}<li><span>{{ item.label }}</span><span class="badge text-bg-light">+{{ item.points }}</span></li>{% endfor %}</ul>
+  <div class="advice-box"><strong>Suggested next step</strong><p class="mb-0 mt-1">{{ result.advice }}</p></div>
+  <p class="small text-secondary mt-3 mb-0">{{ result.disclaimer }}</p>
+  <hr class="my-4">
+  <h3 class="h5">Create an incident from this case</h3>
+  <p class="text-secondary small">Copy the relevant message into a new incident record to preserve its context and add evidence.</p>
+  <a class="btn btn-outline-primary" href="{{ url_for('new_incident') }}">Create incident record</a>
+</div>
+{% endif %}
+{% endblock %}

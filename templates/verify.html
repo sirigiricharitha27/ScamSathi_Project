@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Verify evidence · ScamSathi{% endblock %}
+{% block content %}
+<div class="page-heading"><span class="eyebrow">EVIDENCE INTEGRITY</span><h1 class="display-6 fw-bold mt-2">Verify file hash</h1><p class="text-secondary">Compare the current file hash with the value recorded at upload time.</p></div>
+<div class="panel p-4">
+  <span class="risk risk-{{ 'low' if status == 'MATCH' else 'high' }}">{{ status }}</span>
+  <h2 class="h4 mt-3">{{ evidence.original_name }}</h2>
+  <p class="text-secondary small">Recorded on {{ evidence.added_at }}</p>
+  <label class="form-label fw-semibold">Recorded SHA-256</label><code class="hash-block">{{ evidence.sha256 }}</code>
+  <label class="form-label fw-semibold mt-3">Current SHA-256</label><code class="hash-block">{{ current_hash }}</code>
+  <p class="mt-3 mb-0">{% if status == "MATCH" %}The file currently matches the hash recorded when it was uploaded.{% elif status == "MISMATCH" %}The file differs from the originally recorded bytes. Investigate before relying on this copy.{% else %}The stored evidence file could not be found.{% endif %}</p>
+  <a class="btn btn-outline-primary mt-4" href="{{ url_for('incident_detail', incident_id=evidence.incident_id) }}">Back to incident</a>
+</div>
+{% endblock %}

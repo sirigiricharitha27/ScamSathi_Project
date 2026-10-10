@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}New incident · ScamSathi{% endblock %}
+{% block content %}
+<div class="page-heading"><span class="eyebrow">02 / RECORD</span><h1 class="display-6 fw-bold mt-2">Create an incident</h1><p class="text-secondary">Use a clear title and a factual description. Avoid adding passwords or other secrets.</p></div>
+<form method="post" class="panel p-4">
+  <div class="mb-3"><label class="form-label fw-semibold" for="title">Incident title</label><input id="title" name="title" class="form-control" maxlength="120" required value="{{ title }}" placeholder="Example: Suspicious scholarship message"></div>
+  <div class="mb-3"><label class="form-label fw-semibold" for="incident_type">Incident type</label><select id="incident_type" name="incident_type" class="form-select">
+    {% for option in ["Suspicious message","Phishing URL","Financial scam","Impersonation","Suspicious attachment","Other"] %}<option {% if incident_type == option %}selected{% endif %}>{{ option }}</option>{% endfor %}
+  </select></div>
+  <div class="mb-4"><label class="form-label fw-semibold" for="description">Description or message text</label><textarea id="description" name="description" class="form-control" rows="7" maxlength="8000" required placeholder="Record what happened, what was received, and what actions were taken.">{{ description }}</textarea></div>
+  <button class="btn btn-primary btn-lg" type="submit">Create incident</button>
+</form>
+{% endblock %}

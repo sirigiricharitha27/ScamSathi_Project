@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · ScamSathi{% endblock %}
+{% block content %}
+<section class="hero p-4 p-lg-5 mb-4">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-8">
+      <span class="eyebrow">DIGITAL FIRST-RESPONSE KIT</span>
+      <h1 class="display-5 fw-bold mt-2">From scam suspicion<br>to organized evidence.</h1>
+      <p class="lead text-secondary mt-3">Screen suspicious messages, preserve evidence integrity, record an incident timeline and generate a structured report.</p>
+      <div class="d-flex flex-wrap gap-2 mt-4">
+        <a class="btn btn-primary btn-lg" href="{{ url_for('analyze') }}">Analyze a message</a>
+        <a class="btn btn-outline-dark btn-lg" href="{{ url_for('new_incident') }}">Create incident</a>
+      </div>
+    </div>
+    <div class="col-lg-4"><div class="hero-mark">S<span>+</span></div></div>
+  </div>
+</section>
+<div class="alert alert-info"><strong>Privacy by design:</strong> files are stored locally in this app's data folder. Do not upload real sensitive evidence to a public demo deployment.</div>
+<div class="d-flex align-items-center justify-content-between mt-5 mb-3">
+  <div><h2 class="h3 mb-1">Recent incidents</h2><p class="text-secondary mb-0">Your locally stored investigation records</p></div>
+  <a class="btn btn-outline-primary" href="{{ url_for('new_incident') }}">+ New incident</a>
+</div>
+{% if incidents %}
+<div class="row g-3">
+  {% for incident in incidents %}
+  <div class="col-md-6 col-xl-4">
+    <a class="incident-card" href="{{ url_for('incident_detail', incident_id=incident.id) }}">
+      <div class="d-flex justify-content-between gap-2"><span class="small text-secondary">INCIDENT #{{ incident.id }}</span><span class="risk risk-{{ 'high' if incident.analysis_score >= 60 else ('medium' if incident.analysis_score >= 30 else 'low') }}">{{ incident.analysis_level }}</span></div>
+      <h3 class="h5 mt-3">{{ incident.title }}</h3>
+      <p class="text-secondary small mb-3">{{ incident.incident_type }}</p>
+      <div class="d-flex justify-content-between small text-secondary"><span>{{ incident.created_at }}</span><span>📎 {{ incident.evidence_count }} files</span></div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state text-center p-5"><div class="empty-icon">⌁</div><h3 class="h5">No incidents yet</h3><p class="text-secondary">Create a sample incident to start your first evidence record.</p><a href="{{ url_for('new_incident') }}" class="btn btn-primary">Create first incident</a></div>
+{% endif %}
+<div class="row g-3 mt-4">
+  <div class="col-md-4"><div class="feature-card"><div class="feature-icon">⌕</div><h3 class="h5">Explainable screening</h3><p class="text-secondary mb-0">See which message patterns triggered warnings.</p></div></div>
+  <div class="col-md-4"><div class="feature-card"><div class="feature-icon">#</div><h3 class="h5">Evidence integrity</h3><p class="text-secondary mb-0">Record SHA-256 hashes and verify files later.</p></div></div>
+  <div class="col-md-4"><div class="feature-card"><div class="feature-icon">↗</div><h3 class="h5">Readable reports</h3><p class="text-secondary mb-0">Export incident details, evidence inventory and timeline to PDF.</p></div></div>
+</div>
+{% endblock %}

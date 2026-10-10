@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Incident #{{ incident.id }} · ScamSathi{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+  <div><span class="eyebrow">INCIDENT #{{ incident.id }}</span><h1 class="display-6 fw-bold mt-2">{{ incident.title }}</h1><p class="text-secondary mb-0">{{ incident.incident_type }} · Created {{ incident.created_at }}</p></div>
+  <a class="btn btn-primary" href="{{ url_for('download_report', incident_id=incident.id) }}">↓ Download PDF report</a>
+</div>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <section class="panel p-4 mb-4"><div class="d-flex justify-content-between align-items-center"><h2 class="h5">Incident description</h2><span class="risk risk-{{ 'high' if incident.analysis_score >= 60 else ('medium' if incident.analysis_score >= 30 else 'low') }}">{{ incident.analysis_level }} · {{ incident.analysis_score }}/100</span></div><p class="preserve-text mb-0">{{ incident.description }}</p></section>
+    <section class="panel p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h5 mb-0">Evidence vault</h2><span class="small text-secondary">{{ evidence|length }} file(s)</span></div>
+      <form action="{{ url_for('upload_evidence', incident_id=incident.id) }}" method="post" enctype="multipart/form-data" class="upload-box mb-4">
+        <label for="evidence" class="form-label fw-semibold">Attach evidence file</label><input id="evidence" name="evidence" type="file" class="form-control" accept=".png,.jpg,.jpeg,.webp,.pdf,.txt,.eml" required>
+        <p class="form-text">Allowed: PNG, JPG, WEBP, PDF, TXT, EML. Maximum 8 MB per request. Keep original files safe.</p><button class="btn btn-outline-primary" type="submit">Upload and hash</button>
+      </form>
+      {% if evidence %}
+        {% for item in evidence %}
+        <div class="evidence-row"><div class="file-icon">▤</div><div class="flex-grow-1 min-width-0"><div class="fw-semibold text-break">{{ item.original_name }}</div><div class="small text-secondary">{{ item.size_bytes }} bytes · {{ item.added_at }}</div><code class="hash-text">{{ item.sha256 }}</code><div class="mt-2"><a href="{{ url_for('verify_evidence', evidence_id=item.id) }}" class="small">Verify current hash</a></div></div></div>
+        {% endfor %}
+      {% else %}<p class="text-secondary small mb-0">No evidence attached yet.</p>{% endif %}
+    </section>
+  </div>
+  <div class="col-lg-5">
+    <section class="panel p-4 mb-4"><h2 class="h5">Add timeline event</h2><form method="post" action="{{ url_for('add_event', incident_id=incident.id) }}"><label for="event_text" class="form-label small">Record a factual event</label><textarea id="event_text" name="event_text" class="form-control mb-3" rows="3" maxlength="500" placeholder="Example: Received message by SMS"></textarea><button class="btn btn-outline-primary" type="submit">Add event</button></form></section>
+    <section class="panel p-4"><h2 class="h5 mb-3">Incident timeline</h2><div class="timeline">{% for event in events %}<div class="timeline-item"><div class="timeline-dot"></div><div class="small text-secondary">{{ event.event_time }}</div><div>{{ event.event_text }}</div></div>{% endfor %}</div></section>
+    <div class="alert alert-warning mt-4 small mb-0"><strong>Forensic note:</strong> A hash match confirms the current file matches the saved hash. It does not establish source authenticity or legal admissibility.</div>
+  </div>
+</div>
+{% endblock %}
